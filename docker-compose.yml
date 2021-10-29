@@ -1,0 +1,38 @@
+version: '3.9'
+services: 
+  postgres:
+    image: postgres
+    restart: always
+    environment: 
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=carrent
+    ports: 
+      - "5432:5432"
+    volumes: 
+      - ./db/test.sql:/docker-entrypoint-initdb.d/test.sql
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: "it_team@carshare.mn"
+      PGADMIN_DEFAULT_PASSWORD: "zamdaa2021!@#"
+    ports: 
+      - "16543:80"
+    depends_on: 
+      - postgres
+  api:
+    build: 
+      context: ./carrents-api
+    volumes: 
+      - ./carrents-api:/go/src/gitlab.com/zamdaa/carrents
+    ports:
+      - "9000:9000"
+    links:
+      - postgres
+  client:
+    build: ./carrent-front
+    stdin_open: true  
+    ports: 
+      - "3000:3000"
+
+
